@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/shopspring/decimal"
 )
@@ -12,9 +13,20 @@ type Symbol string
 
 type V1GetMarketsResult struct {
 	// Spot markets that the user is allowed to trade in
-	Spot SpotMarkets `json:"spot"`
+	Spot            SpotMarkets             `json:"spot"`
+	PerpetualFuture *PerpetualFutureMarkets `json:"perps,omitempty"`
 }
 
+type PerpsConfig struct {
+	Market           Market          `json:"market"`
+	UnderlyingMarket Market          `json:"underlyingMarket"`
+	Pair             CurrencyPair    `json:"pair"`
+	BaseIncrement    decimal.Decimal `json:"baseIncrement"`
+	QuoteIncrement   decimal.Decimal `json:"quoteIncrement"`
+}
+type PerpetualFutureMarkets struct {
+	TradingPairs []PerpsConfig `json:"tradingPairs"`
+}
 type SpotMarkets struct {
 	TradingPairs []V1SpotMarketsResult `json:"tradingPairs"`
 }
@@ -67,4 +79,15 @@ func (b *BookLevel) UnmarshalJSON(data []byte) error {
 	b.Price = v[0]
 	b.Quantity = v[1]
 	return nil
+}
+
+func (m Market) AsPair() (CurrencyPair, error) {
+	parts := strings.Split(string(m), "-")
+	if len(parts) != 2 {
+		return CurrencyPair{}, fmt.Errorf("failed CurrencyPairFromString, expected 2, got %d parts.  Input: '%s'", len(parts), string(m))
+	}
+	return CurrencyPair{
+		Base:  parts[0],
+		Quote: parts[1],
+	}, nil
 }

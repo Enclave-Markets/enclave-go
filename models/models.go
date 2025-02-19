@@ -1,5 +1,11 @@
 package models
 
+import (
+	"time"
+
+	"github.com/shopspring/decimal"
+)
+
 const (
 
 	// Tool
@@ -17,6 +23,12 @@ const (
 	V1SpotDepthPath  = "/v1/depth"
 
 	V1SpotClientOrderIDPrefix = "client:"
+
+	// Perps trading
+	V1PerpsOrdersPath = "/v1/perps/orders"
+
+	// Cross
+	V0PricePath = "/v0/price"
 )
 
 type V1PageRes[T any] struct {
@@ -73,4 +85,50 @@ type GetBalanceReq struct {
 	// example:AVAX
 	// required:true
 	Symbol Symbol `json:"symbol"`
+}
+
+type GetMarkPriceRes struct {
+	// trading market pair
+	// example:AVAX-USD.PERP
+	// required:true
+	Market    Market          `json:"market"`
+	MarkPrice decimal.Decimal `json:"markPrice"`
+}
+
+type ApiPosition struct {
+	Market                 Market           `json:"market"`
+	Direction              string           `json:"direction"`
+	NetQuantity            decimal.Decimal  `json:"netQuantity"`
+	AverageEntryPrice      decimal.Decimal  `json:"averageEntryPrice"`
+	UsedMargin             decimal.Decimal  `json:"usedMargin"`
+	UnrealizedPnl          decimal.Decimal  `json:"unrealizedPnl"`
+	MarkPrice              decimal.Decimal  `json:"markPrice"`
+	LiquidationPrice       decimal.Decimal  `json:"liquidationPrice"`
+	BankruptcyPrice        decimal.Decimal  `json:"bankruptcyPrice"`
+	MaintenanceMargin      decimal.Decimal  `json:"maintenanceMargin"`
+	NotionalValue          decimal.Decimal  `json:"notionalValue"`
+	Leverage               decimal.Decimal  `json:"leverage"`
+	NetFundingSinceNeutral decimal.Decimal  `json:"netFundingSinceNeutral"`
+	StopLossTriggerPrice   *decimal.Decimal `json:"stopLossTriggerPrice,omitempty"`
+	TakeProfitTriggerPrice *decimal.Decimal `json:"takeProfitTriggerPrice,omitempty"`
+}
+
+type ApiBookSnapshots []*ApiBookSnapshot
+
+type ApiBookSnapshot struct {
+	Market Market      `json:"market"`
+	Time   time.Time   `json:"time"`
+	Asks   []BookLevel `json:"asks"`
+	Bids   []BookLevel `json:"bids"`
+}
+
+type GetPriceReq struct {
+	Pair CurrencyPair `json:"pair"`
+}
+
+type V0GetPriceRes struct {
+	Pair      CurrencyPair    `json:"pair"`
+	Available bool            `json:"available"`
+	Price     decimal.Decimal `json:"price"`
+	QuotedAt  string          `json:"quotedAt"`
 }

@@ -12,6 +12,15 @@ import (
 	"github.com/Enclave-Markets/enclave-go/models"
 )
 
+type V0AuthToken struct {
+	WalletAddress string `json:"walletAddress"`
+	AccountId     string `json:"accountId"`
+	IssuedAt      int64  `json:"issuedAtSecs"`
+	Expiration    int64  `json:"expirationSecs"`
+	Token         string `json:"token"`
+	NewAccount    bool   `json:"newAccount"`
+}
+
 type ApiKeyArgs struct {
 	KeyId     string
 	KeySecret string
@@ -28,11 +37,12 @@ type ApiClient struct {
 	Headers    map[string]string
 }
 
-func (c *ApiClient) WithApiKey(keyId, keySecret string) {
+func (c *ApiClient) WithApiKey(keyId, keySecret string) *ApiClient {
 	c.apiKeyArgs = &ApiKeyArgs{
 		KeyId:     keyId,
 		KeySecret: keySecret,
 	}
+	return c
 }
 
 func generateSignature(apiSecret string, timestamp string, method string, requestPath string, body string) []byte {
@@ -191,6 +201,21 @@ func (client *ApiClient) GetBalance(req models.GetBalanceReq) (*models.GenericRe
 
 	if !res.Success {
 		return nil, fmt.Errorf("error with getting balance %+v: %+v", req, res.Error)
+	}
+
+	return res, nil
+}
+
+func (client *ApiClient) GetPrice(req models.GetPriceReq) (*models.GenericResponse[models.V0GetPriceRes], error) {
+	res, err := NewHttpJsonClient[models.GetPriceReq, models.GenericResponse[models.V0GetPriceRes]](
+		client.ApiEndpoint + models.V0PricePath,
+	).Post(req)
+	if err != nil {
+		return nil, fmt.Errorf("error with http request to get price: %w", err)
+	}
+
+	if !res.Success {
+		return nil, fmt.Errorf("error getting price: %+v", res.Error)
 	}
 
 	return res, nil

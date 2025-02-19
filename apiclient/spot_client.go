@@ -70,6 +70,22 @@ func (client *ApiClient) CancelAllSpotOrders() error {
 	return nil
 }
 
+func (client *ApiClient) CancelAllSpotOrdersOnMarket(market models.Market) error {
+	path := models.V1SpotOrdersPath + "?market=" + string(market)
+
+	res, err := NewHttpJsonClient[any, models.GenericResponse[any]](
+		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
+
+	if err != nil {
+		return fmt.Errorf("error in http req spot delete all orders: %w", err)
+	}
+	if !res.Success {
+		return fmt.Errorf("bad request spot delete all orders: %v", res.Error)
+	}
+
+	return nil
+}
+
 func (client *ApiClient) CancelSpotOrder(orderId models.OrderID) (*models.GenericResponse[any], error) {
 	path := models.V1SpotOrdersPath + "/" + string(orderId)
 
