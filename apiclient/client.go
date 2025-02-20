@@ -69,7 +69,6 @@ func (c *ApiClient) computeApiKeyArgs(httpVerb string, path string, request any)
 	sig := generateSignature(c.apiKeyArgs.KeySecret, c.apiKeyArgs.Timestamp, httpVerb, path, body)
 	hexSig := hex.EncodeToString(sig)
 	c.apiKeyArgs.Sign = hexSig
-
 }
 
 // getHeaders returns the headers for a request. It includes the auth headers and any extra headers set on the client.
@@ -159,7 +158,6 @@ func (client *ApiClient) AuthedHello() (*models.GenericResponse[string], error) 
 	jsonClient := NewHttpJsonClient[any, models.GenericResponse[string]](client.ApiEndpoint + path)
 	jsonClient.SetHeaders(client.getHeaders("GET", path, nil))
 	res, err := jsonClient.Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to authed hello: %s", err)
 	}
@@ -176,7 +174,6 @@ func (client *ApiClient) Markets() (*models.GenericResponse[models.V1GetMarketsR
 	res, err := NewHttpJsonClient[any, models.GenericResponse[models.V1GetMarketsResult]](
 		client.ApiEndpoint + path,
 	).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to v1 markets: %w", err)
 	}
@@ -194,7 +191,6 @@ func (client *ApiClient) GetBalance(req models.GetBalanceReq) (*models.GenericRe
 	res, err := NewHttpJsonClient[models.GetBalanceReq, models.GenericResponse[models.V0GetBalanceRes]](
 		client.ApiEndpoint + path,
 	).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
-
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to get balance: %w", err)
 	}

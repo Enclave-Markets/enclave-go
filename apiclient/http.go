@@ -155,8 +155,7 @@ func (rlc *RateLimitedSecureHttpJsonClient[REQUEST_T, REPLY_T]) Get(request REQU
 	return rlc.client.Do("GET", request)
 }
 
-type JsonSerializer[T any] struct {
-}
+type JsonSerializer[T any] struct{}
 
 func (js JsonSerializer[T]) ToJsonString(x T) (string, error) {
 	j, err := json.Marshal(x)

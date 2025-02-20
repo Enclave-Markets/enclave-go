@@ -11,7 +11,6 @@ func (client *ApiClient) AddPerpsOrder(req models.AddOrderReq) (*models.GenericR
 
 	res, err := NewHttpJsonClient[models.AddOrderReq, models.GenericResponse[models.ApiOrder]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
-
 	if err != nil {
 		return res, fmt.Errorf("error with http req in spot add order: %w", err)
 	}
@@ -27,7 +26,6 @@ func (client *ApiClient) CancelAllPerpsOrdersOnMarket(market models.Market) erro
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[any]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
-
 	if err != nil {
 		return fmt.Errorf("error in http req perps delete all orders: %w", err)
 	}

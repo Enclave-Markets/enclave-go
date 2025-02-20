@@ -8,8 +8,10 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type Market string
-type Symbol string
+type (
+	Market string
+	Symbol string
+)
 
 type V1GetMarketsResult struct {
 	// Spot markets that the user is allowed to trade in

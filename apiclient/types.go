@@ -44,18 +44,23 @@ type ChannelType string
 func TopOfBooksPerps() ChannelType {
 	return ChannelType("topOfBooksPerps")
 }
+
 func FillsPerps() ChannelType {
 	return ChannelType("fillsPerps")
 }
+
 func PerpsPositions() ChannelType {
 	return "positionsPerps"
 }
+
 func PerpsMarkPrices() ChannelType {
 	return "markPricesPerps"
 }
+
 func TopOfBooksSpot() ChannelType {
 	return ChannelType("topOfBooksSpot")
 }
+
 func FillsSpot() ChannelType {
 	return ChannelType("fillsSpot")
 }

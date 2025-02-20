@@ -11,7 +11,6 @@ func (client *ApiClient) AddSpotOrder(req models.AddOrderReq) (*models.GenericRe
 
 	res, err := NewHttpJsonClient[models.AddOrderReq, models.GenericResponse[models.ApiOrder]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
-
 	if err != nil {
 		return res, fmt.Errorf("error with http req in spot add order: %w", err)
 	}
@@ -27,7 +26,6 @@ func (client *ApiClient) GetSpotDepthBook(market models.Market) (*models.Generic
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[models.BookSnapshot]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error in http req Spot get depth book: %w", err)
 	}
@@ -43,7 +41,6 @@ func (client *ApiClient) GetSpotOrder(orderId models.OrderID) (*models.GenericRe
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[models.ApiOrder]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error in http req spot get order: %w", err)
 	}
@@ -59,7 +56,6 @@ func (client *ApiClient) CancelAllSpotOrders() error {
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[any]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
-
 	if err != nil {
 		return fmt.Errorf("error in http req spot delete all orders: %w", err)
 	}
@@ -75,7 +71,6 @@ func (client *ApiClient) CancelAllSpotOrdersOnMarket(market models.Market) error
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[any]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
-
 	if err != nil {
 		return fmt.Errorf("error in http req spot delete all orders: %w", err)
 	}
@@ -91,7 +86,6 @@ func (client *ApiClient) CancelSpotOrder(orderId models.OrderID) (*models.Generi
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[any]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
-
 	if err != nil {
 		return res, fmt.Errorf("error in http req spot delete order: %w", err)
 	}
@@ -107,7 +101,6 @@ func (client *ApiClient) CancelSpotOrderByClientID(clientOrderId models.OrderID)
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[any]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
-
 	if err != nil {
 		return res, fmt.Errorf("error in http req spot delete order by client id: %w", err)
 	}
@@ -124,7 +117,6 @@ func (client *ApiClient) GetSpotFills(params models.FillParams) (*models.V1PageR
 
 	res, err := NewHttpJsonClient[any, models.V1PageRes[models.ApiFill]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error in http req spot get fills: %w", err)
 	}
@@ -137,7 +129,6 @@ func (client *ApiClient) GetSpotFillsByOrderID(orderID models.OrderID) (*models.
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[[]models.ApiFill]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error in http req spot get fill by order ID: %w", err)
 	}
@@ -154,7 +145,6 @@ func (client *ApiClient) GetSpotFillsByClientOrderID(orderID models.OrderID) (*m
 
 	res, err := NewHttpJsonClient[any, models.GenericResponse[[]models.ApiFill]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error in http req spot get fill by client order ID: %w", err)
 	}
