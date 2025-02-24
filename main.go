@@ -12,7 +12,6 @@ import (
 )
 
 func main() {
-
 	// the trading pair that will be used, and balance symbol to check
 	symbol := models.Symbol("AVAX")
 	market := models.Market("AVAX-USDC")
@@ -168,5 +167,4 @@ func main() {
 		fmt.Println("could not find any fills!")
 	}
 	fmt.Println("found n-fills any orders:", len(allFillsResp.Result))
-
 }

@@ -27,8 +27,10 @@ type AddOrderReq struct {
 
 type BidAsk bool
 
-const Bid BidAsk = true
-const Ask BidAsk = false
+const (
+	Bid BidAsk = true
+	Ask BidAsk = false
+)
 
 func (b BidAsk) Opposite() BidAsk {
 	return !b
@@ -64,8 +66,10 @@ func (b BidAsk) MarshalJSON() ([]byte, error) {
 
 type OrderType bool
 
-const OrderTypeLimit OrderType = false
-const OrderTypeMarket OrderType = true
+const (
+	OrderTypeLimit  OrderType = false
+	OrderTypeMarket OrderType = true
+)
 
 func (o OrderType) String() string {
 	if o {
@@ -97,8 +101,10 @@ func (o *OrderType) UnmarshalJSON(data []byte) error {
 
 type OrderTimeInForce string
 
-const OrderTimeInForceGoodUntilCancelled OrderTimeInForce = "GTC"
-const OrderTimeInForceImmediateOrCancel OrderTimeInForce = "IOC"
+const (
+	OrderTimeInForceGoodUntilCancelled OrderTimeInForce = "GTC"
+	OrderTimeInForceImmediateOrCancel  OrderTimeInForce = "IOC"
+)
 
 type ApiOrder struct {
 	OrderID        OrderID          `json:"orderId"`

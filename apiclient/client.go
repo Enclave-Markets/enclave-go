@@ -12,6 +12,15 @@ import (
 	"github.com/Enclave-Markets/enclave-go/models"
 )
 
+type V0AuthToken struct {
+	WalletAddress string `json:"walletAddress"`
+	AccountId     string `json:"accountId"`
+	IssuedAt      int64  `json:"issuedAtSecs"`
+	Expiration    int64  `json:"expirationSecs"`
+	Token         string `json:"token"`
+	NewAccount    bool   `json:"newAccount"`
+}
+
 type ApiKeyArgs struct {
 	KeyId     string
 	KeySecret string
@@ -28,11 +37,12 @@ type ApiClient struct {
 	Headers    map[string]string
 }
 
-func (c *ApiClient) WithApiKey(keyId, keySecret string) {
+func (c *ApiClient) WithApiKey(keyId, keySecret string) *ApiClient {
 	c.apiKeyArgs = &ApiKeyArgs{
 		KeyId:     keyId,
 		KeySecret: keySecret,
 	}
+	return c
 }
 
 func generateSignature(apiSecret string, timestamp string, method string, requestPath string, body string) []byte {
@@ -59,7 +69,6 @@ func (c *ApiClient) computeApiKeyArgs(httpVerb string, path string, request any)
 	sig := generateSignature(c.apiKeyArgs.KeySecret, c.apiKeyArgs.Timestamp, httpVerb, path, body)
 	hexSig := hex.EncodeToString(sig)
 	c.apiKeyArgs.Sign = hexSig
-
 }
 
 // getHeaders returns the headers for a request. It includes the auth headers and any extra headers set on the client.
@@ -149,7 +158,6 @@ func (client *ApiClient) AuthedHello() (*models.GenericResponse[string], error) 
 	jsonClient := NewHttpJsonClient[any, models.GenericResponse[string]](client.ApiEndpoint + path)
 	jsonClient.SetHeaders(client.getHeaders("GET", path, nil))
 	res, err := jsonClient.Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to authed hello: %s", err)
 	}
@@ -166,7 +174,6 @@ func (client *ApiClient) Markets() (*models.GenericResponse[models.V1GetMarketsR
 	res, err := NewHttpJsonClient[any, models.GenericResponse[models.V1GetMarketsResult]](
 		client.ApiEndpoint + path,
 	).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
-
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to v1 markets: %w", err)
 	}
@@ -184,13 +191,27 @@ func (client *ApiClient) GetBalance(req models.GetBalanceReq) (*models.GenericRe
 	res, err := NewHttpJsonClient[models.GetBalanceReq, models.GenericResponse[models.V0GetBalanceRes]](
 		client.ApiEndpoint + path,
 	).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
-
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to get balance: %w", err)
 	}
 
 	if !res.Success {
 		return nil, fmt.Errorf("error with getting balance %+v: %+v", req, res.Error)
+	}
+
+	return res, nil
+}
+
+func (client *ApiClient) GetPrice(req models.GetPriceReq) (*models.GenericResponse[models.V0GetPriceRes], error) {
+	res, err := NewHttpJsonClient[models.GetPriceReq, models.GenericResponse[models.V0GetPriceRes]](
+		client.ApiEndpoint + models.V0PricePath,
+	).Post(req)
+	if err != nil {
+		return nil, fmt.Errorf("error with http request to get price: %w", err)
+	}
+
+	if !res.Success {
+		return nil, fmt.Errorf("error getting price: %+v", res.Error)
 	}
 
 	return res, nil

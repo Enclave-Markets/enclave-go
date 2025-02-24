@@ -1,0 +1,15 @@
+issues:
+  exclude-rules:
+    - linters:
+      - golint
+      text: "don't use underscores in Go names"
+
+linters:
+  enable:
+    - gofmt
+    - gofumpt
+
+linters-settings:
+  errcheck:
+    exclude-functions:
+      - (net/http.ResponseWriter).Write
