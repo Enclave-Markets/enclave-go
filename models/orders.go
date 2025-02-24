@@ -10,6 +10,23 @@ import (
 
 type OrderID string
 
+type BatchAddOrderReq struct {
+	Orders []*AddOrderReq `json:"orders"`
+}
+
+type BatchAddOrderRes struct {
+	// Orders that were successfully added
+	AddedOrders []*ApiOrder `json:"addedOrders"`
+	// Orders that were not added, and the reason why
+	FailedOrders []*ErroredAddOrderReq `json:"failedOrders"`
+}
+
+type ErroredAddOrderReq struct {
+	Order        *AddOrderReq `json:"order"`
+	ErrorMessage string       `json:"error"`
+	ErrorCode    string       `json:"errorCode"`
+}
+
 type AddOrderReq struct {
 	Side      BidAsk          `json:"side"`
 	Price     decimal.Decimal `json:"price"`

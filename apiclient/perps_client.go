@@ -12,10 +12,25 @@ func (client *ApiClient) AddPerpsOrder(req models.AddOrderReq) (*models.GenericR
 	res, err := NewHttpJsonClient[models.AddOrderReq, models.GenericResponse[models.ApiOrder]](
 		client.ApiEndpoint + path).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
 	if err != nil {
-		return res, fmt.Errorf("error with http req in spot add order: %w", err)
+		return res, fmt.Errorf("error with http req in perp add order: %w", err)
 	}
 	if !res.Success {
-		return res, fmt.Errorf("error in spot add order %v: %v", req, res.Error)
+		return res, fmt.Errorf("error in perps add order %v: %v", req, res.Error)
+	}
+
+	return res, err
+}
+
+func (client *ApiClient) AddPerpsBatchOrders(req models.BatchAddOrderReq) (*models.GenericResponse[models.BatchAddOrderRes], error) {
+	path := models.V1PerpsBatchOrdersPath
+
+	res, err := NewHttpJsonClient[models.BatchAddOrderReq, models.GenericResponse[models.BatchAddOrderRes]](
+		client.ApiEndpoint + path).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
+	if err != nil {
+		return res, fmt.Errorf("error with http req in perps batch order: %w", err)
+	}
+	if !res.Success {
+		return res, fmt.Errorf("error in perps batch order %v: %v", req, res.Error)
 	}
 
 	return res, err

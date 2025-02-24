@@ -21,6 +21,21 @@ func (client *ApiClient) AddSpotOrder(req models.AddOrderReq) (*models.GenericRe
 	return res, err
 }
 
+func (client *ApiClient) AddSpotBatchOrders(req models.BatchAddOrderReq) (*models.GenericResponse[models.BatchAddOrderRes], error) {
+	path := models.V1SpotBatchOrdersPath
+
+	res, err := NewHttpJsonClient[models.BatchAddOrderReq, models.GenericResponse[models.BatchAddOrderRes]](
+		client.ApiEndpoint + path).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
+	if err != nil {
+		return res, fmt.Errorf("error with http req in spot batch order: %w", err)
+	}
+	if !res.Success {
+		return res, fmt.Errorf("error in spot batch order %v: %v", req, res.Error)
+	}
+
+	return res, err
+}
+
 func (client *ApiClient) GetSpotDepthBook(market models.Market) (*models.GenericResponse[models.BookSnapshot], error) {
 	path := models.V1SpotDepthPath + "?market=" + string(market)
 
