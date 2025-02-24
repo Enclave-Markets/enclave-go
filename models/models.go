@@ -18,14 +18,16 @@ const (
 	V1MarketsPath = "/v1/markets"
 
 	// Spot trading
-	V1SpotOrdersPath = "/v1/orders"
-	V1SpotFillsPath  = "/v1/fills"
-	V1SpotDepthPath  = "/v1/depth"
+	V1SpotOrdersPath      = "/v1/orders"
+	V1SpotBatchOrdersPath = "/v1/orders/batch"
+	V1SpotFillsPath       = "/v1/fills"
+	V1SpotDepthPath       = "/v1/depth"
 
 	V1SpotClientOrderIDPrefix = "client:"
 
 	// Perps trading
-	V1PerpsOrdersPath = "/v1/perps/orders"
+	V1PerpsOrdersPath      = "/v1/perps/orders"
+	V1PerpsBatchOrdersPath = "/v1/perps/orders/batch"
 
 	// Cross
 	V0PricePath = "/v0/price"
