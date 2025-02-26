@@ -149,6 +149,10 @@ func (c *WebsocketConn) ReadMessage() (*WebSocketAPIResponse, error) {
 	return res, nil
 }
 
+func (c *WebsocketConn) WriteCloseMessage() error {
+	return c.wsConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+}
+
 func (c *WebsocketConn) Close() error {
 	return c.wsConn.Close()
 }
