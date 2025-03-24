@@ -67,4 +67,5 @@ type ApiFill struct {
 	FeeRebate     *decimal.Decimal `json:"feeRebate,omitempty"`
 	CreatedAt     time.Time        `json:"time"`
 	ADL           *bool            `json:"isADL,omitempty"`
+	RealizedPNL   *decimal.Decimal `json:"pnl,omitempty"`
 }
