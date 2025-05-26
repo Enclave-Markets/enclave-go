@@ -167,4 +167,65 @@ func main() {
 		fmt.Println("could not find any fills!")
 	}
 	fmt.Println("found n-fills any orders:", len(allFillsResp.Result))
+
+	targetMarket := models.Market("AVAX-USD.P")
+	perpsResp, err := client.GetPerpsContracts()
+	if err != nil {
+		fmt.Printf("Failed to get perps contracts: %v\n", err)
+	} else {
+		contracts := perpsResp.Result
+		fmt.Printf("Found %d perps contracts\n", len(contracts))
+
+		// Display summary of all contracts
+		fmt.Println("\nSummary of all contracts:")
+		fmt.Println("----------------------------------------------------")
+		fmt.Printf("%-12s | %-8s | %-8s | %-8s\n", "MARKET", "STATUS", "DISABLED", "LAST PRICE")
+		fmt.Println("----------------------------------------------------")
+		for _, contract := range contracts {
+			status := "OPEN"
+			if contract.IsClosed {
+				status = "CLOSED"
+			}
+			fmt.Printf("%-12s | %-8s | %-8t | %-8s\n",
+				contract.Market,
+				status,
+				contract.Disabled,
+				contract.LastPrice)
+		}
+
+		// Check specific market
+		fmt.Printf("\nLooking for target market: %s\n", targetMarket)
+		var found bool
+		for _, contract := range contracts {
+			if contract.Market == targetMarket {
+				found = true
+				status := "OPEN"
+				if contract.IsClosed {
+					status = "CLOSED"
+				}
+
+				// Print detailed information about the target market
+				fmt.Println("\nDetailed Information:")
+				fmt.Println("----------------------------------------------------")
+				fmt.Printf("Market:               %s\n", contract.Market)
+				fmt.Printf("Status:               %s\n", status)
+				fmt.Printf("Base/Quote:           %s/%s\n", contract.BaseCurrency, contract.QuoteCurrency)
+				fmt.Printf("Contract Type:        %s\n", contract.ContractType)
+				fmt.Printf("Last Price:           %s\n", contract.LastPrice)
+				fmt.Printf("Bid/Ask:              %s/%s\n", contract.Bid, contract.Ask)
+				fmt.Printf("24h High/Low:         %s/%s\n", contract.High, contract.Low)
+				fmt.Printf("24h Change:           %s%%\n", contract.PriceChangePercent)
+				fmt.Printf("Open Interest:        %s (%s USD)\n", contract.OpenInterest, contract.OpenInterestUsd)
+				fmt.Printf("Funding Rate:         %s\n", contract.FundingRate)
+				fmt.Printf("Next Funding:         %s\n", contract.NextFundingRateTimestamp)
+				fmt.Printf("Maker/Taker Fee:      %s/%s\n", contract.MakerFee, contract.TakerFee)
+				fmt.Printf("Tags:                 %v\n", contract.Tags)
+				break
+			}
+		}
+
+		if !found {
+			fmt.Printf("\nTarget market %s not found in contracts\n", targetMarket)
+		}
+	}
 }
