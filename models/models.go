@@ -28,6 +28,7 @@ const (
 	// Perps trading
 	V1PerpsOrdersPath      = "/v1/perps/orders"
 	V1PerpsBatchOrdersPath = "/v1/perps/orders/batch"
+	V1PerpsContractsPath   = "/v1/perps/contracts"
 
 	// Cross
 	V0PricePath = "/v0/price"
@@ -133,4 +134,34 @@ type V0GetPriceRes struct {
 	Available bool            `json:"available"`
 	Price     decimal.Decimal `json:"price"`
 	QuotedAt  string          `json:"quotedAt"`
+}
+
+// PerpsContract represents a perpetual futures contract
+type PerpsContract struct {
+	Market                   Market   `json:"market"`
+	ProductType              string   `json:"productType"`
+	ContractType             string   `json:"contractType"`
+	BaseCurrency             string   `json:"baseCurrency"`
+	QuoteCurrency            string   `json:"quoteCurrency"`
+	Disabled                 bool     `json:"disabled"`
+	LastPrice                string   `json:"lastPrice"`
+	BaseVolume               string   `json:"baseVolume"`
+	QuoteVolume              string   `json:"quoteVolume"`
+	UsdVolume                string   `json:"usdVolume"`
+	Bid                      string   `json:"bid"`
+	Ask                      string   `json:"ask"`
+	High                     string   `json:"high"`
+	Low                      string   `json:"low"`
+	OpenInterest             string   `json:"openInterest"`
+	OpenInterestUsd          string   `json:"openInterestUsd"`
+	IndexPrice               string   `json:"indexPrice"`
+	IndexCurrency            string   `json:"indexCurrency"`
+	FundingRate              string   `json:"fundingRate"`
+	NextFundingRate          string   `json:"nextFundingRate"`
+	NextFundingRateTimestamp string   `json:"nextFundingRateTimestamp"`
+	MakerFee                 string   `json:"makerFee"`
+	TakerFee                 string   `json:"takerFee"`
+	PriceChangePercent       string   `json:"priceChangePercent"`
+	IsClosed                 bool     `json:"isClosed"`
+	Tags                     []string `json:"tags"`
 }

@@ -50,3 +50,20 @@ func (client *ApiClient) CancelAllPerpsOrdersOnMarket(market models.Market) erro
 
 	return nil
 }
+
+// GetPerpsContracts retrieves all perpetual futures contracts from the /v1/perps/contracts endpoint
+func (client *ApiClient) GetPerpsContracts() (*models.GenericResponse[[]models.PerpsContract], error) {
+	path := models.V1PerpsContractsPath
+
+	res, err := NewHttpJsonClient[any, models.GenericResponse[[]models.PerpsContract]](
+		client.ApiEndpoint + path).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute perps contracts request: %w", err)
+	}
+
+	if !res.Success {
+		return res, fmt.Errorf("failed to get perps contracts: %v", res.Error)
+	}
+
+	return res, nil
+}
