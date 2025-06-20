@@ -49,7 +49,7 @@ func (client *ApiClient) NewWebsocketConnection() (*WebsocketConn, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse the api endpoint %s: %s", client.ApiEndpoint, err.Error())
 	}
-	host, _, err := net.SplitHostPort(u.Host)
+	host, port, err := net.SplitHostPort(u.Host)
 	if err != nil {
 		if u.Host != "" {
 			host = u.Host
@@ -57,7 +57,12 @@ func (client *ApiClient) NewWebsocketConnection() (*WebsocketConn, error) {
 			return nil, err
 		}
 	}
-	spotWsEndpoint := fmt.Sprintf("wss://%s/ws", host)
+	var spotWsEndpoint string
+	if port == "" {
+		spotWsEndpoint = fmt.Sprintf("wss://%s/ws", host)
+	} else {
+		spotWsEndpoint = fmt.Sprintf("wss://%s:%s/ws", host, port)
+	}
 
 	dialer := *websocket.DefaultDialer
 	dialer.TLSClientConfig = GetTlsConfig(spotWsEndpoint)
