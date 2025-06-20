@@ -86,11 +86,11 @@ func (client *ApiClient) NewWebsocketConnection() (*WebsocketConn, error) {
 
 func (c *ApiClient) GetWebsocketLoginArgs() *RequestArgs {
 	if c.apiKeyArgs != nil {
-		c.computeApiKeyArgs("enclave_ws_login", "", nil)
+		timestamp, sig := c.computeApiKeyArgs("enclave_ws_login", "", nil)
 		return &RequestArgs{
 			KeyId:          c.apiKeyArgs.KeyId,
-			TimeUnixMillis: c.apiKeyArgs.Timestamp,
-			Sign:           c.apiKeyArgs.Sign,
+			TimeUnixMillis: timestamp,
+			Sign:           sig,
 		}
 	} else {
 		return nil

@@ -24,8 +24,6 @@ type V0AuthToken struct {
 type ApiKeyArgs struct {
 	KeyId     string
 	KeySecret string
-	Timestamp string
-	Sign      string
 }
 
 type ApiClient struct {
@@ -52,9 +50,9 @@ func generateSignature(apiSecret string, timestamp string, method string, reques
 	return mac.Sum(nil)
 }
 
-func (c *ApiClient) computeApiKeyArgs(httpVerb string, path string, request any) {
+func (c *ApiClient) computeApiKeyArgs(httpVerb string, path string, request any) (string, string) {
 	if c.apiKeyArgs == nil {
-		return
+		return "", ""
 	}
 	jsonBody, err := json.Marshal(request)
 	if err != nil {
@@ -65,10 +63,9 @@ func (c *ApiClient) computeApiKeyArgs(httpVerb string, path string, request any)
 		body = ""
 	}
 
-	c.apiKeyArgs.Timestamp = fmt.Sprint(time.Now().UnixMilli())
-	sig := generateSignature(c.apiKeyArgs.KeySecret, c.apiKeyArgs.Timestamp, httpVerb, path, body)
-	hexSig := hex.EncodeToString(sig)
-	c.apiKeyArgs.Sign = hexSig
+	timestamp := fmt.Sprint(time.Now().UnixMilli())
+	sig := generateSignature(c.apiKeyArgs.KeySecret, timestamp, httpVerb, path, body)
+	return timestamp, hex.EncodeToString(sig)
 }
 
 // getHeaders returns the headers for a request. It includes the auth headers and any extra headers set on the client.
@@ -83,14 +80,13 @@ func (c *ApiClient) getHeaders(httpVerb string, path string, request any) map[st
 }
 
 func (c *ApiClient) getAuthHeaders(httpVerb string, path string, request any) map[string]string {
-	c.computeApiKeyArgs(httpVerb, path, request)
+	timestamp, sig := c.computeApiKeyArgs(httpVerb, path, request)
 	headers := map[string]string{}
 	if c.apiKeyArgs != nil {
 		headers["ENCLAVE-KEY-ID"] = c.apiKeyArgs.KeyId
-		headers["ENCLAVE-TIMESTAMP"] = c.apiKeyArgs.Timestamp
-		headers["ENCLAVE-SIGN"] = c.apiKeyArgs.Sign
+		headers["ENCLAVE-TIMESTAMP"] = timestamp
+		headers["ENCLAVE-SIGN"] = sig
 	}
-
 	return headers
 }
 
