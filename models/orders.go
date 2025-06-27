@@ -9,6 +9,7 @@ import (
 )
 
 type OrderID string
+type ClientOrderID string
 
 type BatchAddOrderReq struct {
 	Orders []*AddOrderReq `json:"orders"`
@@ -21,6 +22,24 @@ type BatchAddOrderRes struct {
 	FailedOrders []*ErroredAddOrderReq `json:"failedOrders"`
 }
 
+type BatchCancelRes struct {
+	// Successfully cancelled orders
+	SuccessfulCancels []*ApiOrder `json:"successfulCancels"`
+
+	// FailedCancels cancel attempts
+	FailedCancels []*CancelError `json:"failedCancels"`
+}
+
+type CancelError struct {
+	// Order ID that failed to cancel
+	OrderID string `json:"orderId"`
+
+	// Error message explaining why cancel failed
+	Error string `json:"error"`
+
+	// Empty if the error isn't a semantic error
+	ErrorCode string `json:"errorCode"`
+}
 type ErroredAddOrderReq struct {
 	Order        *AddOrderReq `json:"order"`
 	ErrorMessage string       `json:"error"`

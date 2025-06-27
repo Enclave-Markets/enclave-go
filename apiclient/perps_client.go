@@ -2,6 +2,7 @@ package apiclient
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Enclave-Markets/enclave-go/models"
 )
@@ -34,6 +35,26 @@ func (client *ApiClient) AddPerpsBatchOrders(req models.BatchAddOrderReq) (*mode
 	}
 
 	return res, err
+}
+
+func (client *ApiClient) CancelPerpsOrdersByClientId(clientIds []models.ClientOrderID) (*models.GenericResponse[models.BatchCancelRes], error) {
+
+	ids := make([]string, 0, len(clientIds))
+	for _, id := range clientIds {
+		ids = append(ids, "client:"+string(id))
+	}
+
+	path := models.V1PerpsBatchOrdersPath + "?orderIDs=" + strings.Join(ids, ",")
+	res, err := NewHttpJsonClient[any, models.GenericResponse[models.BatchCancelRes]](
+		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
+	if err != nil {
+		return res, fmt.Errorf("error in http req perps delete batch: %w", err)
+	}
+	if !res.Success {
+		return res, fmt.Errorf("bad request perps delete batch: %v", res.Error)
+	}
+
+	return res, nil
 }
 
 func (client *ApiClient) CancelAllPerpsOrdersOnMarket(market models.Market) error {
