@@ -10,8 +10,10 @@ import (
 func (client *ApiClient) AddPerpsOrder(req models.AddOrderReq) (*models.GenericResponse[models.ApiOrder], error) {
 	path := models.V1PerpsOrdersPath
 
-	res, err := NewHttpJsonClient[models.AddOrderReq, models.GenericResponse[models.ApiOrder]](
-		client.ApiEndpoint + path).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
+	res, err := NewHttpJsonClient[models.AddOrderReq, models.GenericResponse[models.ApiOrder]](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		SetHeaders(client.getHeaders("POST", path, req)).
+		Post(req)
 	if err != nil {
 		return res, fmt.Errorf("error with http req in perp add order: %w", err)
 	}
@@ -25,8 +27,10 @@ func (client *ApiClient) AddPerpsOrder(req models.AddOrderReq) (*models.GenericR
 func (client *ApiClient) AddPerpsBatchOrders(req models.BatchAddOrderReq) (*models.GenericResponse[models.BatchAddOrderRes], error) {
 	path := models.V1PerpsBatchOrdersPath
 
-	res, err := NewHttpJsonClient[models.BatchAddOrderReq, models.GenericResponse[models.BatchAddOrderRes]](
-		client.ApiEndpoint + path).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
+	res, err := NewHttpJsonClient[models.BatchAddOrderReq, models.GenericResponse[models.BatchAddOrderRes]](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		SetHeaders(client.getHeaders("POST", path, req)).
+		Post(req)
 	if err != nil {
 		return res, fmt.Errorf("error with http req in perps batch order: %w", err)
 	}
@@ -45,8 +49,10 @@ func (client *ApiClient) CancelPerpsOrdersByClientId(clientIds []models.ClientOr
 	}
 
 	path := models.V1PerpsBatchOrdersPath + "?orderIDs=" + strings.Join(ids, ",")
-	res, err := NewHttpJsonClient[any, models.GenericResponse[models.BatchCancelRes]](
-		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
+	res, err := NewHttpJsonClient[any, models.GenericResponse[models.BatchCancelRes]](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		SetHeaders(client.getHeaders("DELETE", path, nil)).
+		Delete(nil)
 	if err != nil {
 		return res, fmt.Errorf("error in http req perps delete batch: %w", err)
 	}
@@ -60,8 +66,10 @@ func (client *ApiClient) CancelPerpsOrdersByClientId(clientIds []models.ClientOr
 func (client *ApiClient) CancelAllPerpsOrdersOnMarket(market models.Market) error {
 	path := models.V1PerpsOrdersPath + "?market=" + string(market)
 
-	res, err := NewHttpJsonClient[any, models.GenericResponse[any]](
-		client.ApiEndpoint + path).SetHeaders(client.getHeaders("DELETE", path, nil)).Delete(nil)
+	res, err := NewHttpJsonClient[any, models.GenericResponse[any]](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		SetHeaders(client.getHeaders("DELETE", path, nil)).
+		Delete(nil)
 	if err != nil {
 		return fmt.Errorf("error in http req perps delete all orders: %w", err)
 	}
@@ -76,8 +84,10 @@ func (client *ApiClient) CancelAllPerpsOrdersOnMarket(market models.Market) erro
 func (client *ApiClient) GetPerpsContracts() (*models.GenericResponse[[]models.PerpsContract], error) {
 	path := models.V1PerpsContractsPath
 
-	res, err := NewHttpJsonClient[any, models.GenericResponse[[]models.PerpsContract]](
-		client.ApiEndpoint + path).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
+	res, err := NewHttpJsonClient[any, models.GenericResponse[[]models.PerpsContract]](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		SetHeaders(client.getHeaders("GET", path, nil)).
+		Get(nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute perps contracts request: %w", err)
 	}

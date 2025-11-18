@@ -33,6 +33,7 @@ type ApiClient struct {
 	// each request with a timestamp and signature.
 	apiKeyArgs *ApiKeyArgs
 	Headers    map[string]string
+	timeout    time.Duration
 }
 
 func (c *ApiClient) WithApiKey(keyId, keySecret string) *ApiClient {
@@ -40,6 +41,11 @@ func (c *ApiClient) WithApiKey(keyId, keySecret string) *ApiClient {
 		KeyId:     keyId,
 		KeySecret: keySecret,
 	}
+	return c
+}
+
+func (c *ApiClient) WithTimeout(timeout time.Duration) *ApiClient {
+	c.timeout = timeout
 	return c
 }
 
@@ -127,9 +133,10 @@ func (client *ApiClient) WaitForEndpoint() {
 func (client *ApiClient) GetPublicStatus() (*models.GetPublicStatusRes, error) {
 	path := models.StatusPath
 
-	res, err := NewHttpJsonClient[any, models.GetPublicStatusRes](
-		client.ApiEndpoint + path,
-	).Get(nil)
+	res, err := NewHttpJsonClient[any, models.GetPublicStatusRes](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		Get(nil)
+
 	if err != nil {
 		return nil, err
 	}
@@ -139,9 +146,9 @@ func (client *ApiClient) GetPublicStatus() (*models.GetPublicStatusRes, error) {
 func (client *ApiClient) Hello() (*map[string]any, error) {
 	path := models.HelloPath
 
-	res, err := NewHttpJsonClient[any, map[string]any](
-		client.ApiEndpoint + path,
-	).Get(nil)
+	res, err := NewHttpJsonClient[any, map[string]any](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		Get(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -151,8 +158,9 @@ func (client *ApiClient) Hello() (*map[string]any, error) {
 func (client *ApiClient) AuthedHello() (*models.GenericResponse[string], error) {
 	path := models.AuthedHelloPath
 
-	jsonClient := NewHttpJsonClient[any, models.GenericResponse[string]](client.ApiEndpoint + path)
-	jsonClient.SetHeaders(client.getHeaders("GET", path, nil))
+	jsonClient := NewHttpJsonClient[any, models.GenericResponse[string]](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		SetHeaders(client.getHeaders("GET", path, nil))
 	res, err := jsonClient.Get(nil)
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to authed hello: %s", err)
@@ -167,9 +175,10 @@ func (client *ApiClient) AuthedHello() (*models.GenericResponse[string], error) 
 
 func (client *ApiClient) Markets() (*models.GenericResponse[models.V1GetMarketsResult], error) {
 	path := models.V1MarketsPath
-	res, err := NewHttpJsonClient[any, models.GenericResponse[models.V1GetMarketsResult]](
-		client.ApiEndpoint + path,
-	).SetHeaders(client.getHeaders("GET", path, nil)).Get(nil)
+	res, err := NewHttpJsonClient[any, models.GenericResponse[models.V1GetMarketsResult]](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		SetHeaders(client.getHeaders("GET", path, nil)).
+		Get(nil)
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to v1 markets: %w", err)
 	}
@@ -184,9 +193,10 @@ func (client *ApiClient) Markets() (*models.GenericResponse[models.V1GetMarketsR
 func (client *ApiClient) GetBalance(req models.GetBalanceReq) (*models.GenericResponse[models.V0GetBalanceRes], error) {
 	path := models.V0GetBalancePath
 
-	res, err := NewHttpJsonClient[models.GetBalanceReq, models.GenericResponse[models.V0GetBalanceRes]](
-		client.ApiEndpoint + path,
-	).SetHeaders(client.getHeaders("POST", path, req)).Post(req)
+	res, err := NewHttpJsonClient[models.GetBalanceReq, models.GenericResponse[models.V0GetBalanceRes]](client.ApiEndpoint + path).
+		WithTimeout(client.timeout).
+		SetHeaders(client.getHeaders("POST", path, req)).
+		Post(req)
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to get balance: %w", err)
 	}
@@ -199,9 +209,9 @@ func (client *ApiClient) GetBalance(req models.GetBalanceReq) (*models.GenericRe
 }
 
 func (client *ApiClient) GetPrice(req models.GetPriceReq) (*models.GenericResponse[models.V0GetPriceRes], error) {
-	res, err := NewHttpJsonClient[models.GetPriceReq, models.GenericResponse[models.V0GetPriceRes]](
-		client.ApiEndpoint + models.V0PricePath,
-	).Post(req)
+	res, err := NewHttpJsonClient[models.GetPriceReq, models.GenericResponse[models.V0GetPriceRes]](client.ApiEndpoint + models.V0PricePath).
+		WithTimeout(client.timeout).
+		Post(req)
 	if err != nil {
 		return nil, fmt.Errorf("error with http request to get price: %w", err)
 	}
