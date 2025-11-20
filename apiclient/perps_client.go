@@ -49,7 +49,7 @@ func (client *ApiClient) GetPerpOrder(orderId models.OrderID) (*models.GenericRe
 		SetHeaders(client.getHeaders("GET", path, nil)).
 		Get(nil)
 	if err != nil {
-		return nil, fmt.Errorf("error in http req spot get order: %w", err)
+		return nil, fmt.Errorf("error in http req perp get order: %w", err)
 	}
 	if !res.Success {
 		return res, fmt.Errorf("bad request perps get order %s: %v", orderId, res.Error)
@@ -91,7 +91,7 @@ func (client *ApiClient) CancelAllPerpsOrders() error {
 		return fmt.Errorf("error in http req perps delete all orders: %w", err)
 	}
 	if !res.Success {
-		return fmt.Errorf("bad request spot delete all orders: %v", res.Error)
+		return fmt.Errorf("bad request perps delete all orders: %v", res.Error)
 	}
 
 	return nil
@@ -158,11 +158,11 @@ func (client *ApiClient) GetPerpsFillsByOrderID(orderID models.OrderID) (*models
 		SetHeaders(client.getHeaders("GET", path, nil)).
 		Get(nil)
 	if err != nil {
-		return nil, fmt.Errorf("error in http req spot get fill by order ID: %w", err)
+		return nil, fmt.Errorf("error in http req perps get fill by order ID: %w", err)
 	}
 
 	if !res.Success {
-		return res, fmt.Errorf("bad request spot fill by order id %s: %v", orderID, res.Error)
+		return res, fmt.Errorf("bad request perps fill by order id %s: %v", orderID, res.Error)
 	}
 
 	return res, err
@@ -176,7 +176,7 @@ func (client *ApiClient) GetPerpsFillsByClientOrderID(orderID models.OrderID) (*
 		SetHeaders(client.getHeaders("GET", path, nil)).
 		Get(nil)
 	if err != nil {
-		return nil, fmt.Errorf("error in http req spot get fill by client order ID: %w", err)
+		return nil, fmt.Errorf("error in http req perps get fill by client order ID: %w", err)
 	}
 
 	if !res.Success {
