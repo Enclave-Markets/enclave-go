@@ -144,7 +144,7 @@ func (client *ApiClient) GetPerpsDepthBook(market models.Market) (*models.Generi
 		return nil, fmt.Errorf("error in http req perps get depth book: %w", err)
 	}
 	if !res.Success {
-		return res, fmt.Errorf("bad request Spot perps depth book: %v", res.Error)
+		return res, fmt.Errorf("bad request perps depth book: %v", res.Error)
 	}
 
 	return res, nil

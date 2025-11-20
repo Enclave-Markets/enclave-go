@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strconv"
 	"time"
 
@@ -21,8 +22,8 @@ func main() {
 	}
 
 	client.WithApiKey(
-		"enclaveKeyId_ddf8852f03b722e7283643f9888d4553",
-		"enclaveApiSecret_f8ac04be404689508c200ae6771a2477eff01ce79bf5ba3c6105be655e8a1b45",
+		os.Getenv("ENCLAVE_KEY"),
+		os.Getenv("ENCLAVE_SECRET"),
 	)
 
 	client.WaitForEndpoint()
@@ -31,8 +32,6 @@ func main() {
 		fmt.Println("authed-hello failed:", err)
 		return
 	}
-
-	client = client.WithTimeout(time.Microsecond)
 
 	// get the AVAX-USDC trading pair to find the min order sizes
 	marketsResp, err := client.Markets()
