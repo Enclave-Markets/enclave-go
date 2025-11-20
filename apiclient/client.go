@@ -107,9 +107,9 @@ func NewApiClientFromEnv(env string) (*ApiClient, error) {
 	var apiUrl string
 	switch strings.ToLower(env) {
 	case "sandbox":
-		apiUrl = "https://api-sandbox.enclave.market"
+		apiUrl = "https://api-sandbox.enclave.trade"
 	case "prod":
-		apiUrl = "https://api.enclave.market"
+		apiUrl = "https://api.enclave.trade"
 	default:
 		return nil, fmt.Errorf("unknown env: %s", env)
 	}

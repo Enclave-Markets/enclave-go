@@ -90,6 +90,7 @@ func (cl *HttpJsonClient[REQUEST_T, REPLY_T]) Do(method string, request REQUEST_
 
 	c := http.DefaultClient
 	c.Timeout = cl.timeout
+
 	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
