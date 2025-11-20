@@ -28,7 +28,9 @@ const (
 	// Perps trading
 	V1PerpsOrdersPath      = "/v1/perps/orders"
 	V1PerpsBatchOrdersPath = "/v1/perps/orders/batch"
+	V1PerpsFillsPath       = "/v1/perps/fills"
 	V1PerpsContractsPath   = "/v1/perps/contracts"
+	V1PerpsDepthPath       = "/v1/perps/depth"
 
 	// Cross
 	V0PricePath = "/v0/price"

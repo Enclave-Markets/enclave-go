@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"golang.org/x/time/rate"
 )
@@ -16,6 +17,7 @@ type HttpJsonClient[REQUEST_T any, REPLY_T any] struct {
 	ApiEndpoint   string
 	headers       map[string]string
 	IsCSVResponse bool
+	timeout       time.Duration
 }
 
 func NewHttpJsonClient[REQUEST_T any, REPLY_T any](apiEndpoint string) *HttpJsonClient[REQUEST_T, REPLY_T] {
@@ -23,6 +25,11 @@ func NewHttpJsonClient[REQUEST_T any, REPLY_T any](apiEndpoint string) *HttpJson
 		ApiEndpoint: apiEndpoint,
 		headers:     map[string]string{},
 	}
+}
+
+func (cl *HttpJsonClient[REQUEST_T, REPLY_T]) WithTimeout(timeout time.Duration) *HttpJsonClient[REQUEST_T, REPLY_T] {
+	cl.timeout = timeout
+	return cl
 }
 
 func (cl *HttpJsonClient[REQUEST_T, REPLY_T]) WithHeader(key string, value string) *HttpJsonClient[REQUEST_T, REPLY_T] {
@@ -81,7 +88,10 @@ func (cl *HttpJsonClient[REQUEST_T, REPLY_T]) Do(method string, request REQUEST_
 		req.Header.Set(k, v)
 	}
 
-	resp, err := http.DefaultClient.Do(req)
+	c := http.DefaultClient
+	c.Timeout = cl.timeout
+
+	resp, err := c.Do(req)
 	if err != nil {
 		return nil, err
 	}

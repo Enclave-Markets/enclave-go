@@ -13,8 +13,7 @@ import (
 
 func main() {
 	// the trading pair that will be used, and balance symbol to check
-	symbol := models.Symbol("AVAX")
-	market := models.Market("AVAX-USDC")
+	market := models.Market("AVAX-USD.P")
 
 	client, err := apiclient.NewApiClientFromEnv("sandbox")
 	if err != nil {
@@ -34,23 +33,15 @@ func main() {
 		return
 	}
 
-	// get the balance of AVAX
-	balanceResp, err := client.GetBalance(models.GetBalanceReq{Symbol: symbol})
-	if err != nil {
-		fmt.Println("failed to get balance:", err)
-		return
-	}
-	fmt.Println(symbol, "balance:", balanceResp.Result.TotalBalance)
-
 	// get the AVAX-USDC trading pair to find the min order sizes
 	marketsResp, err := client.Markets()
 	if err != nil {
-		fmt.Println("failed to get markets", err, marketsResp.Success)
+		fmt.Println("failed to get markets", err)
 		return
 	}
 
 	var baseMin, quoteMin decimal.Decimal
-	for _, pair := range marketsResp.Result.Spot.TradingPairs {
+	for _, pair := range marketsResp.Result.PerpetualFuture.TradingPairs {
 		if pair.Market != market {
 			continue
 		}
@@ -59,7 +50,7 @@ func main() {
 	fmt.Println("base-min:", baseMin, "quote-min:", quoteMin)
 
 	// get top of book for avax usdc
-	book, err := client.GetSpotDepthBook(market)
+	book, err := client.GetPerpsDepthBook(market)
 	if err != nil {
 		fmt.Println("failed to get market depth:", err)
 		return
@@ -73,7 +64,7 @@ func main() {
 	fmt.Println("best-ask-price:", bestAsk.Price, "best-ask-size:", bestAsk.Quantity)
 
 	// place a sell limit order of the smallest size one tick above the top of book (so we don't get filled)
-	orderResp, err := client.AddSpotOrder(
+	orderResp, err := client.AddPerpsOrder(
 		models.AddOrderReq{
 			Market: market,
 			Side:   models.Ask,
@@ -89,15 +80,15 @@ func main() {
 	fmt.Println("order placed, current state:", orderResp.Result.State)
 
 	// cancel all orders in the market
-	if err := client.CancelAllSpotOrders(); err != nil {
-		fmt.Println("failed to cancel spot orders:", err)
+	if err := client.CancelAllPerpsOrders(); err != nil {
+		fmt.Println("failed to cancel orders:", err)
 		return
 	}
 
 	// get the order state
-	orderResp, err = client.GetSpotOrder(orderResp.Result.OrderID)
+	orderResp, err = client.GetPerpOrder(orderResp.Result.OrderID)
 	if err != nil {
-		fmt.Println("failed to get spot order:", err)
+		fmt.Println("failed to get perps order:", err)
 		return
 	}
 
@@ -115,7 +106,7 @@ func main() {
 	}
 
 	clientOrderID := models.OrderID(strconv.FormatUint(uint64(time.Now().UnixNano()), 10))
-	orderResp, err = client.AddSpotOrder(
+	orderResp, err = client.AddPerpsOrder(
 		models.AddOrderReq{
 			Market:        market,
 			Side:          side,
@@ -136,7 +127,7 @@ func main() {
 	fmt.Println("market order placed, current state:", orderResp.Result.State)
 
 	// lets find the fills
-	fillsResp, err := client.GetSpotFillsByOrderID(orderResp.Result.OrderID)
+	fillsResp, err := client.GetPerpsFillsByOrderID(orderResp.Result.OrderID)
 	if err != nil {
 		fmt.Println("unable to find fill:", err)
 		return
@@ -147,7 +138,7 @@ func main() {
 	fmt.Println("found n-fills for market order:", len(fillsResp.Result))
 
 	// lets find the fills by client order ID this time
-	fillsResp, err = client.GetSpotFillsByClientOrderID(orderResp.Result.ClientOrderID)
+	fillsResp, err = client.GetPerpsFillsByClientOrderID(orderResp.Result.ClientOrderID)
 	if err != nil {
 		fmt.Println("unable to find fill:", err)
 		return
@@ -158,7 +149,7 @@ func main() {
 	fmt.Println("found n-fills by client order ID for market order:", len(fillsResp.Result))
 
 	// now find all fills
-	allFillsResp, err := client.GetSpotFills(models.FillParams{})
+	allFillsResp, err := client.GetPerpsFills(models.FillParams{})
 	if err != nil {
 		fmt.Println("unable to find all fills:", err)
 		return
